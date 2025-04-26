@@ -1,32 +1,32 @@
 function sendLocation() {
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(success, error);
-  } else {
-    document.getElementById("status").innerText = "Geolocation is not supported.";
-  }
-}
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
 
-function success(position) {
-  const latitude = position.coords.latitude;
-  const longitude = position.coords.longitude;
+      try {
+        const response = await fetch('https://location-backend-1-dg92.onrender.com/save-location', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ latitude, longitude })
+        });
 
-  fetch("https://https://location-backend-1-dg92.onrender.com/save-location", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ latitude, longitude })
-  })
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("status").innerText =
-        `✅ Sent! Detected: ${data.state}, ${data.region} Region, India`;
-    })
-    .catch(() => {
-      document.getElementById("status").innerText = "❌ Failed to send location.";
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(`✅ Location Sent!\nState: ${result.state}\nRegion: ${result.region}`);
+        } else {
+          alert(`❌ Failed to save location:\n${result.error || 'Unknown error'}`);
+        }
+      } catch (error) {
+        alert(`❌ Fetch failed:\n${error.message}`);
+      }
+    }, (error) => {
+      alert(`❌ Location Error: ${error.message}`);
     });
-}
-
-function error(err) {
-  document.getElementById("status").innerText = "Error: " + err.message;
+  } else {
+    alert("❌ Geolocation is not supported by this browser.");
+  }
 }
