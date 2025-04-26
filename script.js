@@ -10,7 +10,7 @@ function success(position) {
   const latitude = position.coords.latitude;
   const longitude = position.coords.longitude;
 
-  fetch("https://your-backend-url.onrender.com/save-location", {
+  fetch("https://https://location-backend-1-dg92.onrender.com/save-location", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
